@@ -6,27 +6,25 @@
 
 #include "no.hpp"
 
-using namespace std;
-
 void print_top(float *topologia, int size){
 
-cout<< "Minha topologia tem " << size << " nós, que estão distribuídos da seguinte forma:"<<endl;
+std::cout<< "Minha topologia tem " << size << " nós, que estão distribuídos da seguinte forma:"<<std::endl;
 
 for(int i = 0; i < size; i++){
 int offset = 3*i;
-cout << "Nó " << i << ", localizado em ("<< topologia[offset] << "," << topologia[offset+1] << "), tem raio de cobertura igual a "<<topologia[offset+2]<<endl;
+std::cout << "Nó " << i << ", localizado em ("<< topologia[offset] << "," << topologia[offset+1] << "), tem raio de cobertura igual a "<<topologia[offset+2]<<std::endl;
 } 
 
 }
 
 void print_vet(vector<no> &v){
-	cout<< "Minha topologia tem " << v.size() << " nós, que estão distribuídos da seguinte forma:"<<endl;
+	std::cout<< "Minha topologia tem " << v.size() << " nós, que estão distribuídos da seguinte forma:"<<std::endl;
 	for(int i = 0; i < v.size(); i++){
 		no temp;
 		glm::vec2 pos_;
 		temp = v[i];
 		pos_ = temp.get_pos();
-		cout << "Nó " << i << ", localizado em ("<< pos_.x << "," << pos_.y << "), tem raio de cobertura igual a " << temp.get_ratios()<<endl;
+		std::cout << "Nó " << i << ", localizado em ("<< pos_.x << "," << pos_.y << "), tem raio de cobertura igual a " << temp.get_ratios()<<std::endl;
 }
 }
 
