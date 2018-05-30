@@ -3,8 +3,3 @@ Nó 0, localizado em (-2,1), tem raio de cobertura igual a 2
 Nó 1, localizado em (-1,1), tem raio de cobertura igual a 3
 Nó 2, localizado em (0,0), tem raio de cobertura igual a 2
 Nó 3, localizado em (1,-1), tem raio de cobertura igual a 2
-Minha topologia tem 4 nós, que estão distribuídos da seguinte forma:
-Nó 0, localizado em (-2,1), tem raio de cobertura igual a 2
-Nó 1, localizado em (-1,1), tem raio de cobertura igual a 3
-Nó 2, localizado em (0,0), tem raio de cobertura igual a 2
-Nó 3, localizado em (1,-1), tem raio de cobertura igual a 2

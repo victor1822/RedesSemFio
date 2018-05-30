@@ -1,12 +1,15 @@
 #ifndef NO_HPP_INCLUDED
 #define NO_HPP_INCLUDED
 
+#include "tabela.hpp"
+
 class no{
 
 private:
 
 	glm::vec2 pos;
 	float ratios;
+	std::vector<tabela> Tabela;
 
 public:
 
@@ -28,6 +31,14 @@ public:
 
 		return ratios;	
 
+	}
+
+	std::vector<tabela> get_tabela(){
+		return Tabela;
+	}
+
+	void set_tabela(std::vector<tabela> tab){
+		Tabela = tab;		
 	}
 };
 
