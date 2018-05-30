@@ -1,6 +1,7 @@
 #ifndef TABELA_HPP_INCLUDED
 #define TABELA_HPP_INCLUDED
 
+#define INFINITO 1000
 class num_seq{
 public:
 unsigned int id;//id do nó que deu origem ao numero de sequencia

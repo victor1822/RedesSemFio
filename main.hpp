@@ -49,24 +49,30 @@ return topol;
 }
 
 void atualiza_conexoes(std::vector<no> &t,bool *m){
+	
+	while(true){
 
-	for(int i=0;i<t.size();i++){
-		for(int j=0;j<t.size();j++){
-			int offset = i*t.size()+j;
-			if(i==j){
-				m[offset] = 1;
+		for(int i=0;i<t.size();i++){
+			for(int j=0;j<t.size();j++){
+				int offset = i*t.size()+j;
+				if(i==j){
+					m[offset] = 1;
+				}
+				else{
+					glm::vec2 p1 = t[i].get_pos();
+					float r1 = t[i].get_ratios();
+					r1 = r1*r1;
+					glm::vec2 p2 = t[j].get_pos();
+					// no seguinte trecho a gente poderia verificar se está havendo mudança na topologia pra daí 
+					// exibir no log. Quando a mudança fosse percebida pelo algorítmo de roteamento também(tabelas), 
+					// a gente exibiria também; Essas conexões vão nos servir para simular o contexto alcance de sinal
+					if(glm::distance(p1,p2)>r1) m[offset] = 0; //dentro
+					else m[offset] = 1;// fora			
+				}		
 			}
-			else{
-				glm::vec2 p1 = t[i].get_pos();
-				float r1 = t[i].get_ratios();
-				r1 = r1*r1;
-				glm::vec2 p2 = t[j].get_pos();
-				if(glm::distance(p1,p2)>r1) m[offset] = 0; //dentro
-				else m[offset] = 1;// fora			
-			}		
 		}
+		usleep(5000); //(useconds_t useconds)
 	}
-	//return m;
 } 
 
 void print_conexoes(bool *m,std::size_t size){
