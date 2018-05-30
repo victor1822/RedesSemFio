@@ -1,5 +1,12 @@
-Minha topologia tem 4 nós, que estão distribuídos da seguinte forma:
+Minha topologia tem 5 nós, que estão distribuídos da seguinte forma:
 Nó 0, localizado em (-2,1), tem raio de cobertura igual a 2
 Nó 1, localizado em (-1,1), tem raio de cobertura igual a 3
 Nó 2, localizado em (0,0), tem raio de cobertura igual a 2
 Nó 3, localizado em (1,-1), tem raio de cobertura igual a 2
+Nó 4, localizado em (-8,0), tem raio de cobertura igual a 1
+ |0|1|2|3|4|
+0|1|1|1|1|0|
+1|1|1|1|1|1|
+2|1|1|1|1|0|
+3|1|1|1|1|0|
+4|0|0|0|0|1|

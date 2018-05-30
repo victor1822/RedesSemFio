@@ -10,7 +10,7 @@ private:
 	glm::vec2 pos;
 	float ratios;
 	std::vector<tabela> Tabela;
-
+	
 public:
 
 	no();

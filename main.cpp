@@ -9,7 +9,11 @@ print_vet(topologia);
 
 const std::size_t sz = topologia.size();
 
-int *m = new int[sz*sz]; // matriz que define conexões físicas
+bool *m = new bool[sz*sz]; // matriz que define conexões físicas
+
+atualiza_conexoes(topologia,m);
+
+print_conexoes(m,topologia.size());
 
 return 0;
 

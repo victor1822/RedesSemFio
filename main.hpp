@@ -42,6 +42,45 @@ topol.push_back(no(glm::vec2(v1,v2),v3));
 
 //print_top(topologia,sz);
 return topol;
+}
+
+void atualiza_conexoes(std::vector<no> &t,bool *m){
+
+	for(int i=0;i<t.size();i++){
+		for(int j=0;j<t.size();j++){
+			int offset = i*t.size()+j;
+			if(i==j){
+				m[offset] = 1;
+			}
+			else{
+				glm::vec2 p1 = t[i].get_pos();
+				float r1 = t[i].get_ratios();
+				r1 = r1*r1;
+				glm::vec2 p2 = t[j].get_pos();
+				if(glm::distance(p1,p2)>r1) m[offset] = 0; //dentro
+				else m[offset] = 1;// fora			
+			}		
+		}
+	}
+	//return m;
 } 
+
+void print_conexoes(bool *m,std::size_t size){
+
+	std::cout<<" |";
+	for(int k=0;k<size;k++) std::cout<<k<<"|";
+	//stdd::cout<<std::endl;
+
+	for(int i=0;i<size;i++){
+		std::cout<<std::endl;
+		std::cout<<i<<"|";
+		for(int j=0;j<size;j++){
+			int offset = i*size+j;
+			std::cout<<m[offset]<<"|";
+					
+		}
+	}
+
+}
 
 #endif // MAIN_HPP_INCLUDED
