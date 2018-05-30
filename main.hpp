@@ -7,6 +7,10 @@
 #include <vector>
 #include <thread>
 
+#include <unistd.h> //int usleep(useconds_t useconds);
+#include <mutex>
+
+
 #include "no.hpp"
 
 void print_vet(std::vector<no> &v){
@@ -80,6 +84,14 @@ void print_conexoes(bool *m,std::size_t size){
 					
 		}
 	}
+
+}
+
+void vida_de_no(String IdNo, no &t){
+
+
+
+
 
 }
 
