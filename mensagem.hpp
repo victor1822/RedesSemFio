@@ -10,12 +10,12 @@
 class Mensagem{
 
 public:
-    Mensagem(string IdDest_, string msg_);
-    string IdDest;
-    string msg;
+    Mensagem(std::string IdDest_, std::string msg_);
+    std::string IdDest;
+    std::string msg;
 };
 
-Mensagem::Mensagem(string IdDest_, string msg_){
+Mensagem::Mensagem(std::string IdDest_, std::string msg_){
     this->IdDest = IdDest_;
     this->msg = msg_;
 }

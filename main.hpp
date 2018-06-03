@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include <string>
 
 #include <unistd.h> //int usleep(useconds_t useconds);
 #include <mutex>
@@ -41,7 +42,9 @@ float v1=0,v2=0,v3=0;
 
 std::cin>>v1,std::cin>>v2,std::cin>>v3;
 
-topol.push_back(no(glm::vec2(v1,v2),v3));
+bool busy_tone = false;
+
+topol.push_back(no(i,glm::vec2(v1,v2),v3,busy_tone));
 }
 
 //print_top(topologia,sz);
@@ -93,7 +96,7 @@ void print_conexoes(bool *m,std::size_t size){
 
 }
 
-void vida_de_no(String IdNo, no &t){
+void vida_de_no(std::string IdNo, no &t){
 
 
 
