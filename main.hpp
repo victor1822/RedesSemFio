@@ -13,10 +13,11 @@
 #include <unistd.h> //int usleep(useconds_t useconds);
 #include <mutex>
 
-
 #include "no.hpp"
 
 void inicializa_tabelas(std::vector<no> &t);
+
+std::mutex mtx_ouvir_busy_tone; 
 
 void print_vet(std::vector<no> &v){
 	std::cout<< "Minha topologia tem " << v.size() << " nós, que estão distribuídos da seguinte forma:"<<std::endl;
@@ -142,12 +143,143 @@ void print_conexoes(bool *m,std::size_t size){
 
 }
 
-void vida_de_no(std::string IdNo, no &t){
+void static envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
+	int size = t[Id].get_tabela().size();
+
+	if(type==0){
+
+		//this->Id
+		
+		// Preciso saber quem está ao meu alcance.
+
+		// Começar a enviar ao encontrar destinos alcançaveis ou armazenar lista de destinos?
+
+		// Ao enviar, como fazer o controle de acesso ao meio? 
+
+		// digamos que nó 2 quer enviar dados. Nó 1, 3, 5 estão ao meu alcance.
+
+		// como eu sei:
+
+		//	lock
+
+		// consultei busy_tone do nó 1 : false (ok)
+
+		// consultei busy_tone do nó 3 : false (ok)
+		
+		// consultei busy_tone do nó 5 : false (ok)
+
+		//	unlock
 
 
 
+
+		// Pronto, agora o nó deve fazer o que? Ativar o busy_tone de todos os destinos acima e enviar de um em um?
+		// Pq, se for ativar b1, enviar, desativar b1, ativar b3, enviar, desativar b3... não seria broadcast e 
+		// não iriam acontecer conflitos em situações de conflito real.
+
+
+
+		// acredito que seria interessante colocar um semáforo broqueando o trecho entre a linha 181 e 188
+
+		std::vector<int> me_ouvem;
+
+
+			for(int j=0;j<size;j++){
+				int offset = Id*size+j;
+				if(m[offset]==1&&j!=Id){
+
+					me_ouvem.push_back(j);
+
+				}
+			}
+		
+		std::vector<int> me_alcancam;
+
+			for(int i=0;i<me_ouvem.size();i++){
+				
+				int offset = me_ouvem[i]*size+Id;
+
+				if(m[offset]==1 && i!=Id){
+
+					me_alcancam.push_back(i);
+
+				}
+			}
+
+			mtx_ouvir_busy_tone.lock();
+			bool all_fine=true;
+
+			for(int i=0;i<me_alcancam.size() && all_fine;i++){
+
+				all_fine=!t[me_alcancam[i]].busy_tone;
+
+			}
+			if(all_fine){
+
+				for(int i=0;i<me_alcancam.size();i++){
+
+					t[me_alcancam[i]].busy_tone=true;
+
+				}
+			}
+
+			mtx_ouvir_busy_tone.unlock();
+
+			std::vector<tabela> my_table=t[Id].get_tabela_paralela();
+
+			for(int i=0;i<me_ouvem.size();i++){
+
+					
+
+			}
+
+
+	}else if(type==1){
+
+	}
 
 
 }
+
+void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t){ // Richelieu say: Acho que ainda n cobri tudo.
+	// SEMAFORO LOCK ?
+	std::vector<tabela> Tabela = t[to_Id].get_tabela();
+	for(int i=0;i<tabUpdate.size();i++){
+		for(int j=0;j<Tabela.size();j++){
+
+		if(tabUpdate[i].destino==Tabela[j].destino){
+
+			if(tabUpdate[i].numero_de_sequencia.value>Tabela[j].numero_de_sequencia.value){
+			
+				if(tabUpdate[i].metrica<Tabela[j].metrica){
+					Tabela[j].proximo_salto=from_Id;
+					//Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
+					Tabela[j].numero_de_sequencia.value=tabUpdate[i].numero_de_sequencia.value;
+					//Tabela[j].tempo_de_registro=timeOS_.now();
+					Tabela[j].metrica=tabUpdate[i].metrica+1;
+					break;
+				}else if(tabUpdate[i].metrica == INT_MAX && Tabela[j].proximo_salto== from_Id){
+					Tabela[j].proximo_salto=from_Id;
+					Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
+				//	//Tabela[j].tempo_de_registro=timeOS_.now();
+					Tabela[j].metrica=INT_MAX;
+					break;
+				}
+			}
+		}
+/*
+unsigned int destino;
+int proximo_salto;
+num_seq numero_de_sequencia;//quem atualizou a informação da tabela
+int metrica;//numero de saltos
+int tempo_de_registro;
+*/
+		}
+	}
+
+	// SEMAFORO UNLOCK ?
+}
+
+
 
 #endif // MAIN_HPP_INCLUDED

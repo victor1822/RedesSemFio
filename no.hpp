@@ -13,10 +13,13 @@ private:
 	// Terminal "exposto" e "oculto" são atenuados.
 	int Id;
 	std::vector<tabela> Tabela;
-	bool busy_tone;
+	
 	
 public:
+	//std::mutex mtx_tabela; 
 
+	bool busy_tone;
+	
 	no();
 
 	no(int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_, std::vector<tabela> &tabela_); 
@@ -44,16 +47,32 @@ public:
 	}
 
 	std::vector<tabela> get_tabela(){
+		
 		return Tabela;
 	}
 
 	void set_tabela(std::vector<tabela> tab){
+		
 		Tabela = tab;		
 	}
 
-	void reciveTableUpdate(std::vector<tabela> tabUpdate);
+	std::vector<tabela> get_tabela_paralela(){
+	//	mtx_tabela.lock();
+		return Tabela;
+	}
+
+	void set_tabela_paralela(std::vector<tabela> tab){
+	//	mtx_tabela.lock();
+		Tabela = tab;		
+	}
+
+	void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id);
 	void ouvir_canal();
 	void print_tab();
+
+
+	void vida_de_no(std::string IdNo, std::vector<no> &t, bool *m);
+	
 };
 
 /*no::no( void ) : //se o nó for inicializado sem atribuir valores, estes serao seus valores padrao
@@ -89,27 +108,32 @@ no::no(int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_, s
 //{}
 //=============
 
-void no::reciveTableUpdate(std::vector<tabela> tabUpdate){ // Richelieu say: Acho que ainda n cobri tudo.
+void no::reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id){ // Richelieu say: Acho que ainda n cobri tudo.
 	// SEMAFORO LOCK ?
 
 	for(int i=0;i<tabUpdate.size();i++){
 		for(int j=0;j<Tabela.size();j++){
 
-			if(tabUpdate[i].destino==Tabela[j].destino){
+		if(tabUpdate[i].destino==Tabela[j].destino){
+
+			if(tabUpdate[i].numero_de_sequencia.value>Tabela[j].numero_de_sequencia.value){
+			
 				if(tabUpdate[i].metrica<Tabela[j].metrica){
-					Tabela[j].proximo_salto=tabUpdate[i].proximo_salto;
-					Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
+					Tabela[j].proximo_salto=from_Id;
+					//Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
+					Tabela[j].numero_de_sequencia.value=tabUpdate[i].numero_de_sequencia.value;
 					//Tabela[j].tempo_de_registro=timeOS_.now();
 					Tabela[j].metrica=tabUpdate[i].metrica+1;
 					break;
-				}else if(tabUpdate[i].metrica == INT_MAX){
-					Tabela[j].proximo_salto=tabUpdate[i].proximo_salto;
+				}else if(tabUpdate[i].metrica == INT_MAX && Tabela[j].proximo_salto== from_Id){
+					Tabela[j].proximo_salto=from_Id;
 					Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
-					//Tabela[j].tempo_de_registro=timeOS_.now();
+				//	//Tabela[j].tempo_de_registro=timeOS_.now();
 					Tabela[j].metrica=INT_MAX;
 					break;
 				}
 			}
+		}
 /*
 unsigned int destino;
 int proximo_salto;
@@ -148,5 +172,16 @@ void no::print_tab(){
 		
 	}
 }
+
+void no::vida_de_no(std::string IdNo, std::vector<no> &t, bool *m){
+
+
+
+
+
+
+}
+
+
 
 #endif // NO_HPP_INCLUDED
