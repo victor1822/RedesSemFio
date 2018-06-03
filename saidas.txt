@@ -1,3 +1,48 @@
+
+Tabela de roteamento do nó 0
+|destino|proximo salto|metrica|numero de sequencia|
+
+|   0   |   0    |   0     |     04294967295      |      
+|   1   |   -1    |   2147483647     |     04294967295      |      
+|   2   |   -1    |   2147483647     |     04294967295      |      
+|   3   |   -1    |   2147483647     |     04294967295      |      
+|   4   |   -1    |   2147483647     |     04294967295      |      
+
+Tabela de roteamento do nó 1
+|destino|proximo salto|metrica|numero de sequencia|
+
+|   0   |   -1    |   2147483647     |     04294967295      |      
+|   1   |   1    |   0     |     04294967295      |      
+|   2   |   -1    |   2147483647     |     04294967295      |      
+|   3   |   -1    |   2147483647     |     04294967295      |      
+|   4   |   -1    |   2147483647     |     04294967295      |      
+
+Tabela de roteamento do nó 2
+|destino|proximo salto|metrica|numero de sequencia|
+
+|   0   |   -1    |   2147483647     |     04294967295      |      
+|   1   |   -1    |   2147483647     |     04294967295      |      
+|   2   |   2    |   0     |     04294967295      |      
+|   3   |   -1    |   2147483647     |     04294967295      |      
+|   4   |   -1    |   2147483647     |     04294967295      |      
+
+Tabela de roteamento do nó 3
+|destino|proximo salto|metrica|numero de sequencia|
+
+|   0   |   -1    |   2147483647     |     04294967295      |      
+|   1   |   -1    |   2147483647     |     04294967295      |      
+|   2   |   -1    |   2147483647     |     04294967295      |      
+|   3   |   3    |   0     |     04294967295      |      
+|   4   |   -1    |   2147483647     |     04294967295      |      
+
+Tabela de roteamento do nó 4
+|destino|proximo salto|metrica|numero de sequencia|
+
+|   0   |   -1    |   2147483647     |     04294967295      |      
+|   1   |   -1    |   2147483647     |     04294967295      |      
+|   2   |   -1    |   2147483647     |     04294967295      |      
+|   3   |   -1    |   2147483647     |     04294967295      |      
+|   4   |   4    |   0     |     04294967295      |      
 Minha topologia tem 5 nós, que estão distribuídos da seguinte forma:
 Nó 0, localizado em (-2,1), tem raio de cobertura igual a 2
 Nó 1, localizado em (-1,1), tem raio de cobertura igual a 3

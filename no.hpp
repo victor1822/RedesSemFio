@@ -1,8 +1,6 @@
 #ifndef NO_HPP_INCLUDED
 #define NO_HPP_INCLUDED
 
-#include<climits>
-
 #include "tabela.hpp"
 #include "mensagem.hpp"
 
@@ -21,8 +19,7 @@ public:
 
 	no();
 
-	//no(int Id_, const glm::vec2 &pos_, const float &ratios_ );
-	no(int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_); 
+	no(int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_, std::vector<tabela> &tabela_); 
 
 	void set_no(float a, float b){
 
@@ -56,6 +53,7 @@ public:
 
 	void reciveTableUpdate(std::vector<tabela> tabUpdate);
 	void ouvir_canal();
+	void print_tab();
 };
 
 /*no::no( void ) : //se o nó for inicializado sem atribuir valores, estes serao seus valores padrao
@@ -71,11 +69,12 @@ no::no( void ) ://lista de inicialização do nó
         busy_tone{ false }
 {}
 
-no::no(int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_) : //lista de inicialização do nó
+no::no(int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_, std::vector<tabela> &tabela_) : //lista de inicialização do nó
 	Id{ Id_ },
         pos{ pos_ },
         ratios{ ratios_ },
-        busy_tone{ busy_tone_ }
+        busy_tone{ busy_tone_ },
+	Tabela{ tabela_ }
 {}
 
 //=============
@@ -137,6 +136,17 @@ void no::ouvir_canal(){
 
 }
 
+void no::print_tab(){
 
+	std::cout << std::endl << "Tabela de roteamento do nó "<< Id << std::endl;
+
+
+	std::cout<<"|destino|proximo salto|metrica|numero de sequencia|"<<std::endl<<std::endl;
+	for(int i = 0; i<Tabela.size(); i++){
+	
+	Tabela[i].print();
+		
+	}
+}
 
 #endif // NO_HPP_INCLUDED

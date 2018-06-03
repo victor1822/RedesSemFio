@@ -7,12 +7,16 @@
 #include <vector>
 #include <thread>
 #include <string>
+#include <climits>
+#include <time.h>
 
 #include <unistd.h> //int usleep(useconds_t useconds);
 #include <mutex>
 
 
 #include "no.hpp"
+
+void inicializa_tabelas(std::vector<no> &t);
 
 void print_vet(std::vector<no> &v){
 	std::cout<< "Minha topologia tem " << v.size() << " nós, que estão distribuídos da seguinte forma:"<<std::endl;
@@ -44,7 +48,19 @@ std::cin>>v1,std::cin>>v2,std::cin>>v3;
 
 bool busy_tone = false;
 
-topol.push_back(no(i,glm::vec2(v1,v2),v3,busy_tone));
+std::vector<tabela> tab;
+//tabela tt;
+//num_seq nst;
+//nst.value = 0;
+//nsr.id = -1; 
+
+topol.push_back(no(i,glm::vec2(v1,v2),v3,busy_tone,tab));
+}
+
+inicializa_tabelas(topol);
+
+for(int g = 0; g < topol.size(); g++){
+	topol[g].print_tab();
 }
 
 //print_top(topologia,sz);
@@ -78,11 +94,41 @@ void atualiza_conexoes(std::vector<no> &t,bool *m){
 	}
 } 
 
+
+void inicializa_tabelas(std::vector<no> &t){
+
+	tabela tab_tmp;
+	num_seq nst;
+	nst.value = 0;
+	nst.id = -1; 
+
+	for(int i = 0; i < t.size(); i++){
+
+		std::vector<tabela> tabela_temp;
+		tabela_temp = t[i].get_tabela();
+
+		for(int j = 0; j < t.size(); j++){
+
+			tab_tmp.destino = j;
+			if(i==j)tab_tmp.proximo_salto = i;
+			else tab_tmp.proximo_salto = -1;
+			tab_tmp.numero_de_sequencia = nst;
+			if(i!=j)tab_tmp.metrica = INT_MAX;
+			else tab_tmp.metrica = 0;
+			tab_tmp.tempo_de_registro = 0;
+			tabela_temp.push_back(tab_tmp);
+
+		}
+			t[i].set_tabela(tabela_temp);
+			tabela_temp.clear();
+	}
+}
+
+
 void print_conexoes(bool *m,std::size_t size){
 
 	std::cout<<" |";
 	for(int k=0;k<size;k++) std::cout<<k<<"|";
-	//stdd::cout<<std::endl;
 
 	for(int i=0;i<size;i++){
 		std::cout<<std::endl;

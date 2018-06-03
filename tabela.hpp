@@ -18,7 +18,14 @@ int proximo_salto;
 num_seq numero_de_sequencia;//quem atualizou a informação da tabela
 int metrica;//numero de saltos
 int tempo_de_registro;
+void print();
 };
+
+void tabela::print(){
+
+std::cout<<"|   "<<destino<<"   |   "<<proximo_salto<<"    |   "<<metrica<<"     |     "<<numero_de_sequencia.value<<numero_de_sequencia.id<<"      |      "<<std::endl;
+
+}
 
 //tabela::tabela( void ) : destino{ 0 },proximo_salto{ -1 },numero_de_sequencia{ num_seq(0,0) },metrica{ -1 },tempo_de_registro{ 0 }{}
 
