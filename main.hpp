@@ -16,8 +16,9 @@
 #include "no.hpp"
 
 void inicializa_tabelas(std::vector<no> &t);
+void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t);
 
-std::mutex mtx_ouvir_busy_tone; 
+//std::mutex mtx_ouvir_busy_tone; 
 
 void print_vet(std::vector<no> &v){
 	std::cout<< "Minha topologia tem " << v.size() << " nós, que estão distribuídos da seguinte forma:"<<std::endl;
@@ -91,7 +92,7 @@ void atualiza_conexoes(std::vector<no> &t,bool *m){
 				}		
 			}
 		}
-		usleep(5000); //(useconds_t useconds)
+		usleep(2000); //(useconds_t useconds)
 	}
 } 
 
@@ -143,44 +144,14 @@ void print_conexoes(bool *m,std::size_t size){
 
 }
 
-void static envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
+void envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
+	static std::mutex mtx_ouvir_busy_tone; 
+
 	int size = t[Id].get_tabela().size();
 
-	if(type==0){
+	if(type==0){ // atualização completa da tabela de roteamento. (full dump)
 
-		//this->Id
-		
-		// Preciso saber quem está ao meu alcance.
-
-		// Começar a enviar ao encontrar destinos alcançaveis ou armazenar lista de destinos?
-
-		// Ao enviar, como fazer o controle de acesso ao meio? 
-
-		// digamos que nó 2 quer enviar dados. Nó 1, 3, 5 estão ao meu alcance.
-
-		// como eu sei:
-
-		//	lock
-
-		// consultei busy_tone do nó 1 : false (ok)
-
-		// consultei busy_tone do nó 3 : false (ok)
-		
-		// consultei busy_tone do nó 5 : false (ok)
-
-		//	unlock
-
-
-
-
-		// Pronto, agora o nó deve fazer o que? Ativar o busy_tone de todos os destinos acima e enviar de um em um?
-		// Pq, se for ativar b1, enviar, desativar b1, ativar b3, enviar, desativar b3... não seria broadcast e 
-		// não iriam acontecer conflitos em situações de conflito real.
-
-
-
-		// acredito que seria interessante colocar um semáforo broqueando o trecho entre a linha 181 e 188
-
+	
 		std::vector<int> me_ouvem;
 
 
@@ -229,10 +200,20 @@ void static envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 
 			for(int i=0;i<me_ouvem.size();i++){
 
-					
+				
+				reciveTableUpdate(my_table, Id, me_ouvem[i], t);
+				//chama reciveTableUpdate					
+				// sucesso
 
 			}
 
+			mtx_ouvir_busy_tone.lock();
+			for(int i=0;i<me_alcancam.size();i++){
+
+				t[me_alcancam[i]].busy_tone=true;
+
+			}
+			mtx_ouvir_busy_tone.unlock();
 
 	}else if(type==1){
 
@@ -244,6 +225,7 @@ void static envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t){ // Richelieu say: Acho que ainda n cobri tudo.
 	// SEMAFORO LOCK ?
 	std::vector<tabela> Tabela = t[to_Id].get_tabela();
+
 	for(int i=0;i<tabUpdate.size();i++){
 		for(int j=0;j<Tabela.size();j++){
 

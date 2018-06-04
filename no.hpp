@@ -70,6 +70,9 @@ public:
 	void ouvir_canal();
 	void print_tab();
 
+	static void envia_broadcast(int Id,int type, std::vector<no> &t, bool *m);
+	void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t);
+
 
 	void vida_de_no(std::string IdNo, std::vector<no> &t, bool *m);
 	
@@ -173,14 +176,145 @@ void no::print_tab(){
 	}
 }
 
+static void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
+	static std::mutex mtx_ouvir_busy_tone; 
+
+	int size = t[Id].get_tabela().size();
+
+	if(type==0){ // atualização completa da tabela de roteamento. (full dump)
+
+	
+		std::vector<int> me_ouvem;
+
+
+			for(int j=0;j<size;j++){
+				int offset = Id*size+j;
+				if(m[offset]==1&&j!=Id){
+
+					me_ouvem.push_back(j);
+
+				}
+			}
+		
+		std::vector<int> me_alcancam;
+
+			for(int i=0;i<me_ouvem.size();i++){
+				
+				int offset = me_ouvem[i]*size+Id;
+
+				if(m[offset]==1 && i!=Id){
+
+					me_alcancam.push_back(i);
+
+				}
+			}
+
+			mtx_ouvir_busy_tone.lock();
+			bool all_fine=true;
+
+			for(int i=0;i<me_alcancam.size() && all_fine;i++){
+
+				all_fine=!t[me_alcancam[i]].busy_tone;
+
+			}
+			if(all_fine){
+
+				for(int i=0;i<me_alcancam.size();i++){
+
+					t[me_alcancam[i]].busy_tone=true;
+
+				}
+			}
+
+			mtx_ouvir_busy_tone.unlock();
+
+			std::vector<tabela> my_table=t[Id].get_tabela_paralela();
+
+			for(int i=0;i<me_ouvem.size();i++){
+
+				
+				reciveTableUpdate(my_table, Id, me_ouvem[i], t);
+				//chama reciveTableUpdate					
+				// sucesso
+
+			}
+
+			mtx_ouvir_busy_tone.lock();
+			for(int i=0;i<me_alcancam.size();i++){
+
+				t[me_alcancam[i]].busy_tone=true;
+
+			}
+			mtx_ouvir_busy_tone.unlock();
+
+	}else if(type==1){
+
+	}
+
+
+}
+
+void no::reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t){ // Richelieu say: Acho que ainda n cobri tudo.
+	// SEMAFORO LOCK ?
+	std::vector<tabela> Tabela = t[to_Id].get_tabela();
+
+	for(int i=0;i<tabUpdate.size();i++){
+		for(int j=0;j<Tabela.size();j++){
+
+		if(tabUpdate[i].destino==Tabela[j].destino){
+
+			if(tabUpdate[i].numero_de_sequencia.value>Tabela[j].numero_de_sequencia.value){
+			
+				if(tabUpdate[i].metrica<Tabela[j].metrica){
+					Tabela[j].proximo_salto=from_Id;
+					//Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
+					Tabela[j].numero_de_sequencia.value=tabUpdate[i].numero_de_sequencia.value;
+					//Tabela[j].tempo_de_registro=timeOS_.now();
+					Tabela[j].metrica=tabUpdate[i].metrica+1;
+					break;
+				}else if(tabUpdate[i].metrica == INT_MAX && Tabela[j].proximo_salto== from_Id){
+					Tabela[j].proximo_salto=from_Id;
+					Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
+				//	//Tabela[j].tempo_de_registro=timeOS_.now();
+					Tabela[j].metrica=INT_MAX;
+					break;
+				}
+			}
+		}
+/*
+unsigned int destino;
+int proximo_salto;
+num_seq numero_de_sequencia;//quem atualizou a informação da tabela
+int metrica;//numero de saltos
+int tempo_de_registro;
+*/
+		}
+	}
+
+	// SEMAFORO UNLOCK ?
+}
+
 void no::vida_de_no(std::string IdNo, std::vector<no> &t, bool *m){
 
+	while(true){
 
+		envia_broadcast(IdNo, 0, t, m);
+
+
+
+
+
+
+
+		//usleep(5000);
+	}
 
 
 
 
 }
+
+
 
 
 
