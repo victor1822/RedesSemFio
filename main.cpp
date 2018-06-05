@@ -1,7 +1,16 @@
 #include "main.hpp"
 
+void exit_program( void ){
+
+	std::terminate();//kill whatever process
+	std::clog << "Exiting...\n";
+
+}
+
 int main( int argc, char** argv )
 {
+
+atexit(exit_program); //call_back para terminar qualquer thread em execução
 
 std::vector<no> topologia; 
 

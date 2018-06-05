@@ -77,6 +77,7 @@ public:
 
 	void vida_de_no(int IdNo, std::vector<no> &t, bool *m);
 	void dispara_thread(int IdNo, std::vector<no> &t, bool *m);
+	static void teste(void){ std::cout<<"TU É UMA BOSTA DE PROGRAMADOR"<<std::endl;}
 	
 };
 
@@ -285,8 +286,8 @@ void no::print_tab(int Id, std::vector<tabela> tabela_p_imprimir){
 
 void no::dispara_thread(int IdNo, std::vector<no> &t, bool *m){
 
-	thread=std::thread(no::vida_de_no,IdNo,std::ref(t),m,this);
-	thread.join();
+	thread = std::thread(this->vida_de_no,IdNo,std::ref(t),m);
+	this->thread.join();
 
 }
 

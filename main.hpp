@@ -13,6 +13,8 @@
 #include <unistd.h> //int usleep(useconds_t useconds);
 #include <mutex>
 
+#include <stdlib.h> /*int atexit (void (*func)(void));*/
+
 #include "no.hpp"
 
 void inicializa_tabelas(std::vector<no> &t);
