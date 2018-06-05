@@ -229,7 +229,7 @@ void no::reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id
 
 		if(tabUpdate[i].destino==Tabela[j].destino){
 
-			if(tabUpdate[i].numero_de_sequencia.value>Tabela[j].numero_de_sequencia.value){
+			if(tabUpdate[i].numero_de_sequencia.value>Tabela[j].numero_de_sequencia.value ){
 			
 				if(tabUpdate[i].metrica<Tabela[j].metrica){
 					Tabela[j].proximo_salto=from_Id;
@@ -239,11 +239,16 @@ void no::reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id
 					//Tabela[j].tempo_de_registro=timeOS_.now();
 					Tabela[j].metrica=tabUpdate[i].metrica+1;
 					break;
-				}else if(tabUpdate[i].metrica == INT_MAX && Tabela[j].proximo_salto== from_Id){
+				}else if(Tabela[j].proximo_salto== from_Id){
 					Tabela[j].proximo_salto=from_Id;
 					Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
 				//	//Tabela[j].tempo_de_registro=timeOS_.now();
-					Tabela[j].metrica=INT_MAX;
+					if(tabUpdate[i].metrica == INT_MAX){
+						Tabela[j].metrica=INT_MAX;	
+					}else{
+						Tabela[j].metrica=tabUpdate[i].metrica+1;
+					}
+					
 					break;
 				}
 			}
