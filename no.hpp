@@ -245,8 +245,10 @@ void no::reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id
 				//	//Tabela[j].tempo_de_registro=timeOS_.now();
 					if(tabUpdate[i].metrica == INT_MAX){
 						Tabela[j].metrica=INT_MAX;	
+						Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
 					}else{
 						Tabela[j].metrica=tabUpdate[i].metrica+1;
+						Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
 					}
 					
 					break;

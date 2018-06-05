@@ -153,10 +153,10 @@ void print_conexoes(bool *m,std::size_t size){
 void vida_de_no(int IdNo, std::vector<no> &t, bool *m){
 std::cout<<"oi"<<std::endl;
 	
-
+		print_tab(IdNo,t[IdNo].get_tabela());
 		t[IdNo].envia_broadcast(IdNo, 0, t, m);
 
-		print_tab(IdNo,t[IdNo].get_tabela());
+		
 
 
 
