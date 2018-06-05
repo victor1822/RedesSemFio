@@ -17,7 +17,6 @@ private:
 	
 public:
 	//std::mutex mtx_tabela; 
-	static std::thread thread;
 
 	bool busy_tone;
 	
@@ -59,6 +58,7 @@ public:
 
 	std::vector<tabela> get_tabela_paralela(){
 	//	mtx_tabela.lock();
+		Tabela[Id].numero_de_sequencia.value++;
 		return Tabela;
 	}
 
@@ -69,15 +69,13 @@ public:
 
 	//void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id);
 	void ouvir_canal();
-	static void print_tab(int Id, std::vector<tabela> tabela_p_imprimir);
-	//void print_tab(int Id, std::vector<tabela> tabela_p_imprimir)
+	static void print_tab(int Id, int from_Id, std::vector<tabela> tabela_p_imprimir);
+
 	static void envia_broadcast(int Id,int type, std::vector<no> &t, bool *m);
 	static void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t);
 
 
-	void vida_de_no(int IdNo, std::vector<no> &t, bool *m);
-	void dispara_thread(int IdNo, std::vector<no> &t, bool *m);
-	static void teste(void){ std::cout<<"TU É UMA BOSTA DE PROGRAMADOR"<<std::endl;}
+	//static void vida_de_no(int IdNo, std::vector<no> &t, bool *m);
 	
 };
 
@@ -129,6 +127,20 @@ void no::ouvir_canal(){
 
 }
 
+void no::print_tab(int Id, int from_Id, std::vector<tabela> tabela_p_imprimir){
+	static std::mutex mtx_print_tabela; 
+	mtx_print_tabela.lock();
+	std::cout << std::endl << "Tabela de roteamento do nó "<< Id << "após receber do nó "<< from_Id << std::endl;
+
+
+	std::cout<<"| destino|proximo salto|metrica|numero de sequencia (num ID) |"<<std::endl<<std::endl;
+	for(int i = 0; i<tabela_p_imprimir.size(); i++){
+	
+	tabela_p_imprimir[i].print();
+		
+	}
+	mtx_print_tabela.unlock();
+}
 
 void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 	static std::mutex mtx_ouvir_busy_tone; 
@@ -183,7 +195,7 @@ void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 			mtx_ouvir_busy_tone.unlock();
 
 			std::vector<tabela> my_table=t[Id].get_tabela_paralela();
-
+			my_table[Id].numero_de_sequencia.value++;
 			for(int i=0;i<me_ouvem.size();i++){
 
 				
@@ -222,7 +234,8 @@ void no::reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id
 				if(tabUpdate[i].metrica<Tabela[j].metrica){
 					Tabela[j].proximo_salto=from_Id;
 					//Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
-					Tabela[j].numero_de_sequencia.value=tabUpdate[i].numero_de_sequencia.value;
+			//Tabela[j].numero_de_sequencia.value=tabUpdate[i].numero_de_sequencia.value;
+					Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
 					//Tabela[j].tempo_de_registro=timeOS_.now();
 					Tabela[j].metrica=tabUpdate[i].metrica+1;
 					break;
@@ -244,52 +257,13 @@ int tempo_de_registro;
 */
 		}
 	}
-
+	t[to_Id].set_tabela(Tabela);
+	no::print_tab(to_Id,from_Id, Tabela);
 	// SEMAFORO UNLOCK ?
 }
 
-void no::vida_de_no(int IdNo, std::vector<no> &t, bool *m){
-	std::cout<<"oi"<<std::endl;
-	while(true){
-
-		t[IdNo].envia_broadcast(IdNo, 0, t, m);
-
-		print_tab(IdNo,t[IdNo].get_tabela());
 
 
-
-
-
-
-		usleep(1000+5*IdNo);
-	}
-
-
-
-
-}
-
-void no::print_tab(int Id, std::vector<tabela> tabela_p_imprimir){
-	static std::mutex mtx_print_tabela; 
-	mtx_print_tabela.lock();
-	std::cout << std::endl << "Tabela de roteamento do nó "<< Id << std::endl;
-
-
-	std::cout<<"|destino|proximo salto|metrica|numero de sequencia|"<<std::endl<<std::endl;
-	for(int i = 0; i<tabela_p_imprimir.size(); i++){
-	
-		tabela_p_imprimir[i].print();
-		
-	}
-	mtx_print_tabela.unlock();
-}
-
-void no::dispara_thread(int IdNo, std::vector<no> &t, bool *m){
-
-	thread = std::thread(this->vida_de_no,IdNo,std::ref(t),m);
-	this->thread.join();
-
-}
 
 
 

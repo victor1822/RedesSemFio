@@ -1,16 +1,7 @@
 #include "main.hpp"
 
-void exit_program( void ){
-
-	std::terminate();//kill whatever process
-	std::clog << "Exiting...\n";
-
-}
-
 int main( int argc, char** argv )
 {
-
-atexit(exit_program); //call_back para terminar qualquer thread em execução
 
 std::vector<no> topologia; 
 
@@ -28,24 +19,26 @@ atualiza_conexoes(topologia,m);
 			//	Quem vai matar ela? Zoa, quando todos os nós da rede estiverem mortos, podemos sair do loop e mata-la.
 std::cout<<"antes de print conexões"<<std::endl;
 print_conexoes(m,topologia.size());
-std::cout<<"depois das conexões"<<std::endl;
 
+
+while(true){
+
+
+std::cout<<"inicio do laço"<<std::endl;
 
 for(int i=0;i<topologia.size();i++){
-
-	topologia[i].dispara_thread(i,std::ref(topologia), m);
-
+	std::thread th_no(vida_de_no,i,std::ref(topologia),m);	
+	th_no.join(); 	
 }
-
 //std::thread th_no0(vida_de_no,0,std::ref(topologia),m);
-//std::thread th_no1(vida_de_no,0,std::ref(topologia),m);
-
+//std::thread th_no1(vida_de_no,1,std::ref(topologia),m);
+//std::thread th_no2(vida_de_no,2,std::ref(topologia),m);
 //std::cout<<"Ei"<<std::endl;
 //th_no0.join(); 
 //th_no1.join(); 
-//std::cout<<"eU"<<std::endl;
-
-
+//th_no2.join(); 
+std::cout<<"eU"<<std::endl;
+}
 return 0;
 
 }

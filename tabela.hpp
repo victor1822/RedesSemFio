@@ -3,7 +3,7 @@
 
 class num_seq{
 public:
-unsigned int id;//id do nó que deu origem ao numero de sequencia
+int id;//id do nó que deu origem ao numero de sequencia
 unsigned int value;
 };
 
@@ -23,7 +23,7 @@ void print();
 
 void tabela::print(){
 
-std::cout<<"|   "<<destino<<"   |   "<<proximo_salto<<"    |   "<<metrica<<"     |     "<<numero_de_sequencia.value<<numero_de_sequencia.id<<"      |      "<<std::endl;
+std::cout<<"|   "<<destino<<"   |   "<<proximo_salto<<"    |   "<<metrica<<"     |     "<<numero_de_sequencia.value<<" "<<numero_de_sequencia.id<<"      |      "<<std::endl;
 
 }
 
