@@ -16,11 +16,11 @@
 #include "no.hpp"
 
 void inicializa_tabelas(std::vector<no> &t);
-std::mutex mtx_print_tabela; 
+//std::mutex mtx_print_tabela; 
 //void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t);
 
 //std::mutex mtx_ouvir_busy_tone; 
-void print_tab(int Id, std::vector<tabela> tabela_p_imprimir);
+///void print_tab(int Id, std::vector<tabela> tabela_p_imprimir);
 
 void print_vet(std::vector<no> &v){
 	std::cout<< "Minha topologia tem " << v.size() << " nós, que estão distribuídos da seguinte forma:"<<std::endl;
@@ -64,7 +64,7 @@ topol.push_back(no(i,glm::vec2(v1,v2),v3,busy_tone,tab));
 inicializa_tabelas(topol);
 
 for(int g = 0; g < topol.size(); g++){
-	print_tab(g, topol[g].get_tabela());
+	no::print_tab(g, topol[g].get_tabela());
 }
 
 //print_top(topologia,sz);
@@ -146,41 +146,9 @@ void print_conexoes(bool *m,std::size_t size){
 
 }
 
-void vida_de_no(int IdNo, std::vector<no> &t, bool *m){
-std::cout<<"oi"<<std::endl;
-	while(true){
-
-		t[IdNo].envia_broadcast(IdNo, 0, t, m);
-
-		print_tab(IdNo,t[IdNo].get_tabela());
 
 
 
-
-
-
-		usleep(1000+5*IdNo);
-	}
-
-
-
-
-}
-
-void print_tab(int Id, std::vector<tabela> tabela_p_imprimir){
-	//static std::mutex mtx_print_tabela; 
-	mtx_print_tabela.lock();
-	std::cout << std::endl << "Tabela de roteamento do nó "<< Id << std::endl;
-
-
-	std::cout<<"|destino|proximo salto|metrica|numero de sequencia|"<<std::endl<<std::endl;
-	for(int i = 0; i<tabela_p_imprimir.size(); i++){
-	
-	tabela_p_imprimir[i].print();
-		
-	}
-	mtx_print_tabela.unlock();
-}
 
 
 #endif // MAIN_HPP_INCLUDED

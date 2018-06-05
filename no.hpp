@@ -17,6 +17,7 @@ private:
 	
 public:
 	//std::mutex mtx_tabela; 
+	static std::thread thread;
 
 	bool busy_tone;
 	
@@ -69,12 +70,13 @@ public:
 	//void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id);
 	void ouvir_canal();
 	static void print_tab(int Id, std::vector<tabela> tabela_p_imprimir);
-
+	//void print_tab(int Id, std::vector<tabela> tabela_p_imprimir)
 	static void envia_broadcast(int Id,int type, std::vector<no> &t, bool *m);
 	static void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t);
 
 
-	//static void vida_de_no(int IdNo, std::vector<no> &t, bool *m);
+	void vida_de_no(int IdNo, std::vector<no> &t, bool *m);
+	void dispara_thread(int IdNo, std::vector<no> &t, bool *m);
 	
 };
 
@@ -126,20 +128,6 @@ void no::ouvir_canal(){
 
 }
 
-void no::print_tab(int Id, std::vector<tabela> tabela_p_imprimir){
-	static std::mutex mtx_print_tabela; 
-	mtx_print_tabela.lock();
-	std::cout << std::endl << "Tabela de roteamento do nó "<< Id << std::endl;
-
-
-	std::cout<<"|destino|proximo salto|metrica|numero de sequencia|"<<std::endl<<std::endl;
-	for(int i = 0; i<tabela_p_imprimir.size(); i++){
-	
-	tabela_p_imprimir[i].print();
-		
-	}
-	mtx_print_tabela.unlock();
-}
 
 void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 	static std::mutex mtx_ouvir_busy_tone; 
@@ -259,8 +247,48 @@ int tempo_de_registro;
 	// SEMAFORO UNLOCK ?
 }
 
+void no::vida_de_no(int IdNo, std::vector<no> &t, bool *m){
+	std::cout<<"oi"<<std::endl;
+	while(true){
+
+		t[IdNo].envia_broadcast(IdNo, 0, t, m);
+
+		print_tab(IdNo,t[IdNo].get_tabela());
 
 
+
+
+
+
+		usleep(1000+5*IdNo);
+	}
+
+
+
+
+}
+
+void no::print_tab(int Id, std::vector<tabela> tabela_p_imprimir){
+	static std::mutex mtx_print_tabela; 
+	mtx_print_tabela.lock();
+	std::cout << std::endl << "Tabela de roteamento do nó "<< Id << std::endl;
+
+
+	std::cout<<"|destino|proximo salto|metrica|numero de sequencia|"<<std::endl<<std::endl;
+	for(int i = 0; i<tabela_p_imprimir.size(); i++){
+	
+		tabela_p_imprimir[i].print();
+		
+	}
+	mtx_print_tabela.unlock();
+}
+
+void no::dispara_thread(int IdNo, std::vector<no> &t, bool *m){
+
+	thread=std::thread(no::vida_de_no,IdNo,std::ref(t),m,this);
+	thread.join();
+
+}
 
 
 

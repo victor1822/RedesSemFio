@@ -20,13 +20,23 @@ atualiza_conexoes(topologia,m);
 std::cout<<"antes de print conexões"<<std::endl;
 print_conexoes(m,topologia.size());
 std::cout<<"depois das conexões"<<std::endl;
-std::thread th_no0(vida_de_no,0,std::ref(topologia),m);
 
-std::thread th_no1(vida_de_no,0,std::ref(topologia),m);
-std::cout<<"Ei"<<std::endl;
-th_no0.join(); 
-th_no1.join(); 
-std::cout<<"eU"<<std::endl;
+
+for(int i=0;i<topologia.size();i++){
+
+	topologia[i].dispara_thread(i,std::ref(topologia), m);
+
+}
+
+//std::thread th_no0(vida_de_no,0,std::ref(topologia),m);
+//std::thread th_no1(vida_de_no,0,std::ref(topologia),m);
+
+//std::cout<<"Ei"<<std::endl;
+//th_no0.join(); 
+//th_no1.join(); 
+//std::cout<<"eU"<<std::endl;
+
+
 return 0;
 
 }
