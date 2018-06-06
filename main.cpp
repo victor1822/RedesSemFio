@@ -20,6 +20,11 @@ atualiza_conexoes(topologia,m);
 std::cout<<"antes de print conexões"<<std::endl;
 print_conexoes(m,topologia.size());
 
+std::vector<unsigned char> count;
+
+for(int i=0;i<sz;i++){
+	count.push_back(0);
+}
 
 while(true){
 
@@ -27,7 +32,7 @@ while(true){
 std::cout<<"inicio do laço"<<std::endl;
 
 for(int i=0;i<topologia.size();i++){
-	std::thread th_no(vida_de_no,i,std::ref(topologia),m);	
+	std::thread th_no(vida_de_no,i,std::ref(topologia),m, std::ref(count));	
 	th_no.join(); 	
 }
 //std::thread th_no0(vida_de_no,0,std::ref(topologia),m);

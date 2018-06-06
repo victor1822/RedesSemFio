@@ -13,6 +13,8 @@
 #include <unistd.h> //int usleep(useconds_t useconds);
 #include <mutex>
 
+
+
 #include "no.hpp"
 
 void inicializa_tabelas(std::vector<no> &t);
@@ -20,6 +22,7 @@ std::mutex mtx_print_tabela;
 //void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t);
 
 //std::mutex mtx_ouvir_busy_tone; 
+
 void print_tab(int Id, std::vector<tabela> tabela_p_imprimir);
 
 void print_vet(std::vector<no> &v){
@@ -58,7 +61,7 @@ std::vector<tabela> tab;
 //nst.value = 0;
 //nsr.id = -1; 
 
-topol.push_back(no(i,glm::vec2(v1,v2),v3,busy_tone,tab));
+topol.push_back(no(i,glm::vec2(v1,v2),v3,busy_tone,tab,sz));
 }
 
 inicializa_tabelas(topol);
@@ -117,7 +120,10 @@ void inicializa_tabelas(std::vector<no> &t){
 			if(i==j){
 				tab_tmp.proximo_salto = i;
 				nst.id = i; 
+				nst.value = 1; 
 			}else{
+				nst.value = 0; 
+				nst.id = j; 
 				tab_tmp.proximo_salto = -1;	
 			}
 			tab_tmp.numero_de_sequencia = nst;
@@ -150,26 +156,38 @@ void print_conexoes(bool *m,std::size_t size){
 
 }
 
-void vida_de_no(int IdNo, std::vector<no> &t, bool *m){
+
+bool verifica_dump(std::vector<bool> dump){
+	if(dump.empty())return false;
+	for(int i = 0; i < dump.size(); i++){
+		if(dump[i]==true)return true;
+	}
+	return false;
+}
+
+
+void vida_de_no(int IdNo, std::vector<no> &t, bool *m, std::vector<unsigned char> &count){
 std::cout<<"oi"<<std::endl;
 	
-		print_tab(IdNo,t[IdNo].get_tabela());
-		t[IdNo].envia_broadcast(IdNo, 0, t, m);
+		//print_tab(IdNo,t[IdNo].get_tabela());
 
-		
+		if(count[IdNo]<5 && verifica_dump(t[IdNo].modificacoes)){
 
-
-
-
-
-
-		usleep(1000+5*IdNo);
-	
-
+			t[IdNo].envia_broadcast(IdNo, 1, t, m);			
+			count[IdNo]++;		
+		}else{
+			count[IdNo]=0;
+			t[IdNo].envia_broadcast(IdNo, 0, t, m);
+		}
+		//usleep(1000+5*IdNo);
 
 
 
 }
+
+
+
+
 
 void print_tab(int Id, std::vector<tabela> tabela_p_imprimir){
 	//static std::mutex mtx_print_tabela; 
