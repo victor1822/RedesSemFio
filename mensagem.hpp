@@ -10,15 +10,17 @@
 class Mensagem{
 
 public:
-    Mensagem(std::string IdDest_, std::string msg_);
-    std::string IdDest;
-    std::string msg;
+	Mensagem(int &IdOrig_,int &IdDest_, std::string msg_);
+	int IdDest;
+	int IdOrig;
+	std::string msg;
 };
 
-Mensagem::Mensagem(std::string IdDest_, std::string msg_){
-    this->IdDest = IdDest_;
-    this->msg = msg_;
-}
+Mensagem::Mensagem(int &IdOrig_,int &IdDest_, std::string msg_):
+	IdOrig{ IdOrig_ },
+	IdDest{ IdDest_ },
+	msg{ msg_ }	
+{}
 
 
 #endif // MENSAGEM_HPP_INCLUDED

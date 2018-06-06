@@ -3,7 +3,21 @@
 int main( int argc, char** argv )
 {
 
-std::vector<no> topologia; 
+//atexit(exitfunc);
+
+std::vector<no> topologia;
+
+std::vector<std::string> msgs;
+msgs.push_back("Fernando, esses meninos merecem 10");
+msgs.push_back("O que?");
+msgs.push_back("Isso mesmo!");
+msgs.push_back("Aham, claudia, senta lá");
+msgs.push_back("Opa, amigão");
+msgs.push_back("QUEEEEEE?");
+msgs.push_back("Fernando, esses meninos merecem 10");
+msgs.push_back("Fernando, esses meninos merecem 10");
+msgs.push_back("Boa noite");
+ 
 
 topologia = LoadFile(argv);
 print_vet(topologia);
@@ -28,6 +42,23 @@ for(int i=0;i<sz;i++){
 
 while(true){
 
+		bool TF = (rand() % 100) < 30;
+		if(TF){ 
+			static int var = 0;
+			if(var ==10) var = 0;
+			int origem = rand()%topologia.size();
+			int destino = origem;
+		
+			while(destino==origem)
+			destino = rand()%topologia.size();
+
+			std::string mensagem = msgs[var];
+
+			static const Mensagem mm = Mensagem(origem,destino,mensagem);
+			std::cout<<" No "<<origem<<" quer enviar a mensagem '"<<mensagem<<"' para o no"<<destino<<std::endl;
+			topologia[origem].buffer.push(mm);
+			var++;
+		}
 
 std::cout<<"inicio do laço"<<std::endl;
 

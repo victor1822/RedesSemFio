@@ -4,6 +4,14 @@
 #include "tabela.hpp"
 #include "mensagem.hpp"
 
+char * string_to_bits(std::string mensagem){
+	return(char*) mensagem.c_str();
+}
+
+std::string bits_to_string(char * arr){
+	std::string str(arr);
+	return str;
+}
 
 
 class no{
@@ -19,12 +27,14 @@ private:
 	
 public:
 	//std::mutex mtx_tabela; 
+
+	std::stack<Mensagem> buffer;
 	std::vector<bool> modificacoes;
 	bool busy_tone;
 	
 	no();
 
-	no(int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_, std::vector<tabela> &tabela_,const std::size_t &sz); 
+	no(std::stack<Mensagem> buffer_, int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_, std::vector<tabela> &tabela_,const std::size_t &sz); 
 
 	void set_no(float a, float b){
 
@@ -94,7 +104,8 @@ no::no( void ) ://lista de inicialização do nó
         busy_tone{ false }
 {}
 
-no::no(int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_, std::vector<tabela> &tabela_,const std::size_t &sz) : //lista de inicialização do nó
+no::no(std::stack<Mensagem> buffer_, int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_, std::vector<tabela> &tabela_,const std::size_t &sz) : //lista de inicialização do nó
+	buffer{ buffer_ },
 	Id{ Id_ },
         pos{ pos_ },
         ratios{ ratios_ },
@@ -153,8 +164,28 @@ void no::print_tab(int Id, int from_Id, std::vector<tabela> tabela_p_imprimir){
 }
 
 void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
-	
 
+	bool redirect = !t[Id].buffer.empty();
+
+	if(redirect){
+		Mensagem mm = t[Id].buffer.top();
+		t[Id].buffer.pop();
+		if(Id != mm.IdDest){
+			std::vector<tabela> table = t[Id].get_tabela();
+			int dst = table[mm.IdDest].proximo_salto;
+			if(dst>=0){
+	
+			t[dst].buffer.push(mm);
+			std::cout<<"O no "<<Id<<" esta repassando a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" destinada para o no "<<mm.IdDest<<" para o no "<<dst<<std::endl;
+			}
+			else{
+			std::cout<<"O no "<<Id<<" nao conseguiu rota para o destino"<<std::endl;
+				}
+		}else{
+			std::cout<<"O no "<<Id<<" eh o no de destino da mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<std::endl;
+		}
+	}
+	
 	static std::mutex mtx_ouvir_busy_tone; 
 
 	int size = t[Id].get_tabela().size();
@@ -396,6 +427,15 @@ void no::print_tab_this(int Id, std::vector<tabela> tabela_p_imprimir){
 //	mtx_print_tabela.unlock();
 }
 
+
+//void no::envia_mensagem(Mensagem m, std::vector<no> &t){
+
+//t.[id]
+
+
+//}
+
+//void no::recebe_mensagem(char * mensagem,unsigned int id_origem){}
 
 
 

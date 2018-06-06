@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
+#include <stack>
 #include <thread>
 #include <string>
 #include <climits>
@@ -16,6 +17,10 @@
 
 
 #include "no.hpp"
+
+//void exitfunc(){
+//std::clog<<"Exiting..."<<std::endl;
+//}
 
 void inicializa_tabelas(std::vector<no> &t);
 std::mutex mtx_print_tabela; 
@@ -56,12 +61,13 @@ std::cin>>v1,std::cin>>v2,std::cin>>v3;
 bool busy_tone = false;
 
 std::vector<tabela> tab;
+std::stack<Mensagem> mens;
 //tabela tt;
 //num_seq nst;
 //nst.value = 0;
 //nsr.id = -1; 
 
-topol.push_back(no(i,glm::vec2(v1,v2),v3,busy_tone,tab,sz));
+topol.push_back(no(mens,i,glm::vec2(v1,v2),v3,busy_tone,tab,sz));
 }
 
 inicializa_tabelas(topol);
@@ -170,6 +176,10 @@ void vida_de_no(int IdNo, std::vector<no> &t, bool *m, std::vector<unsigned char
 std::cout<<"oi"<<std::endl;
 	
 		//print_tab(IdNo,t[IdNo].get_tabela());
+		bool TrueFalse = (rand() % 100) < 15;
+		if(TrueFalse){
+			//implementar aqui a quebra de enlace
+		}
 
 		if(count[IdNo]<5 && verifica_dump(t[IdNo].modificacoes)){
 
@@ -187,12 +197,10 @@ std::cout<<"oi"<<std::endl;
 
 
 
-
-
 void print_tab(int Id, std::vector<tabela> tabela_p_imprimir){
 	//static std::mutex mtx_print_tabela; 
 	mtx_print_tabela.lock();
-	std::cout << std::endl << "Tabela de roteamento do nó "<< Id << std::endl;
+	std::cout << std::endl << "Tabela de roteamento do nó" << Id << std::endl;
 
 
 	std::cout<<"|destino|proximo salto|metrica|numero de sequencia ( num ID )|"<<std::endl<<std::endl;
