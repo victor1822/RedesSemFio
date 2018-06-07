@@ -182,7 +182,7 @@ void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 			std::cout<<"O no "<<Id<<" nao conseguiu rota para o destino"<<std::endl;
 				}
 		}else{
-			std::cout<<"O no "<<Id<<" eh o no de destino da mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<std::endl;
+			std::cout<<"O no "<<Id<<" recebeu a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" e eh o destino final da mensagem"<<std::endl;
 		}
 	}
 	

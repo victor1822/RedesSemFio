@@ -44,8 +44,9 @@ while(true){
 
 		bool TF = (rand() % 100) < 30;
 		if(TF){ 
-			static int var = 0;
-			if(var ==10) var = 0;
+			//static int var = 0;
+			int var;
+			var = (int)rand()%8;
 			int origem = rand()%topologia.size();
 			int destino = origem;
 		
@@ -57,7 +58,7 @@ while(true){
 			static const Mensagem mm = Mensagem(origem,destino,mensagem);
 			std::cout<<" No "<<origem<<" quer enviar a mensagem '"<<mensagem<<"' para o no"<<destino<<std::endl;
 			topologia[origem].buffer.push(mm);
-			var++;
+			//var++;
 		}
 
 std::cout<<"inicio do laço"<<std::endl;
