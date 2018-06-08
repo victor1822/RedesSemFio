@@ -46,7 +46,7 @@ while(true){
 		if(TF){ 
 			//static int var = 0;
 			int var;
-			var = (int)rand()%8;
+			var = (int)rand()%msgs.size();// var = (int)rand()%8
 			int origem = rand()%topologia.size();
 			int destino = origem;
 		
@@ -60,6 +60,36 @@ while(true){
 			topologia[origem].buffer.push(mm);
 			//var++;
 		}
+
+		bool TF2 = (rand() % 100) < 10;
+		if(TF2){ 
+			//static int var = 0;
+			int varX,varY;
+			varX = (int)rand()%3;
+			varY = (int)rand()%3;
+			int noID = rand()%topologia.size();
+			glm::vec2 aux_pos = topologia[noID].get_pos();
+			if((int)rand()%100 <= 50){
+				aux_pos.x+=varX;
+			}else{
+				aux_pos.x-=varX;
+			}
+			if((int)rand()%100 <= 50){
+				aux_pos.y+=varY;
+			}else{
+				aux_pos.y-=varY;
+			}
+
+			topologia[noID].set_no(aux_pos.x, aux_pos.y);
+
+			std::cout<<" No "<<noID<<" agora está na posição ("<< aux_pos.x << "," << aux_pos.y << "),"<<std::endl;
+			
+			atualiza_conexoes(topologia,m);
+			print_vet(topologia);
+			print_conexoes(m,topologia.size());
+		}
+
+
 
 std::cout<<"inicio do laço"<<std::endl;
 

@@ -165,35 +165,39 @@ void no::print_tab(int Id, int from_Id, std::vector<tabela> tabela_p_imprimir){
 
 void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 
-	bool redirect = !t[Id].buffer.empty();
+	//bool redirect = !t[Id].buffer.empty();
 
-	if(redirect){
-		Mensagem mm = t[Id].buffer.top();
-		t[Id].buffer.pop();
-		if(Id != mm.IdDest){
-			std::vector<tabela> table = t[Id].get_tabela();
-			int dst = table[mm.IdDest].proximo_salto;
-			if(dst>=0){
+	//if(redirect){
+	//	Mensagem mm = t[Id].buffer.top();
+	//	t[Id].buffer.pop();
+	//	if(Id != mm.IdDest){
+	///		std::vector<tabela> table = t[Id].get_tabela();
+	//		int dst = table[mm.IdDest].proximo_salto;
+	//		if(dst>=0){
 	
-			t[dst].buffer.push(mm);
-			std::cout<<"O no "<<Id<<" esta repassando a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" destinada para o no "<<mm.IdDest<<" para o no "<<dst<<std::endl;
-			}
-			else{
-			std::cout<<"O no "<<Id<<" nao conseguiu rota para o destino"<<std::endl;
-				}
-		}else{
-			std::cout<<"O no "<<Id<<" recebeu a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" e eh o destino final da mensagem"<<std::endl;
-		}
-	}
+	//		t[dst].buffer.push(mm);
+	//		std::cout<<"O no "<<Id<<" esta repassando a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" destinada para o no "<<mm.IdDest<<" para o no "<<dst<<std::endl;
+	//		}
+	//		else{
+	//		std::cout<<"O no "<<Id<<" nao conseguiu rota para o destino"<<std::endl;
+	//			}
+	//	}else{
+	//		std::cout<<"O no "<<Id<<" recebeu a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" e eh o destino final da mensagem"<<std::endl;
+	//	}
+	//}
 	
 	static std::mutex mtx_ouvir_busy_tone; 
+
+	std::vector<int> me_ouvem;
+	std::vector<int> me_alcancam;
+
 
 	int size = t[Id].get_tabela().size();
 
 	if(type==0){ // atualização completa da tabela de roteamento. (full dump)
 
 	
-		std::vector<int> me_ouvem;
+		//	std::vector<int> me_ouvem;
 
 
 			for(int j=0;j<size;j++){
@@ -205,7 +209,7 @@ void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 				}
 			}
 		
-		std::vector<int> me_alcancam;
+			//std::vector<int> me_alcancam;
 
 			for(int i=0;i<me_ouvem.size();i++){
 				
@@ -254,17 +258,18 @@ void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 
 			}
 
-			mtx_ouvir_busy_tone.lock();
-			for(int i=0;i<me_alcancam.size();i++){
+		//	mtx_ouvir_busy_tone.lock();
+		//	for(int i=0;i<me_alcancam.size();i++){
 
-				t[me_alcancam[i]].busy_tone=false;
+		//		t[me_alcancam[i]].busy_tone=false;
 
-			}
-			mtx_ouvir_busy_tone.unlock();
+		//	}
+		//	mtx_ouvir_busy_tone.unlock();
 
 	}else if(type==1){
 
-		std::vector<int> me_ouvem;
+			//std::vector<int> me_ouvem;
+
 
 
 			for(int j=0;j<size;j++){
@@ -275,8 +280,9 @@ void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 
 				}
 			}
-		
-		std::vector<int> me_alcancam;
+
+
+	//		std::vector<int> me_alcancam;
 
 			for(int i=0;i<me_ouvem.size();i++){
 				
@@ -339,17 +345,45 @@ void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 				temp_mod[i]=false;
 			}
 			t[Id].modificacoes=temp_mod;
-			mtx_ouvir_busy_tone.lock();
+			
 			
 
-			for(int i=0;i<me_alcancam.size();i++){
-
-				t[me_alcancam[i]].busy_tone=false;
-
-			}
-			mtx_ouvir_busy_tone.unlock();
-
 	}
+
+	bool redirect = !t[Id].buffer.empty();
+
+	if(redirect){
+		Mensagem mm = t[Id].buffer.top();
+		t[Id].buffer.pop();
+		if(Id != mm.IdDest){
+			std::vector<tabela> table = t[Id].get_tabela();
+			int dst = table[mm.IdDest].proximo_salto;
+			if(dst>=0){
+	
+				//t[dst].buffer.push(mm);
+				std::cout<<"O no "<<Id<<" esta repassando a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" destinada para o no "<<mm.IdDest<<" para o no "<<dst<<std::endl;
+				int offset =Id*size+mm.IdDest;
+				if(offset){
+					t[dst].buffer.push(mm);
+				}else{
+					//break;
+
+				}
+			}
+			else{
+			std::cout<<"O no "<<Id<<" nao conseguiu rota para o destino"<<std::endl;
+				}
+		}else{
+			std::cout<<"O no "<<Id<<" recebeu a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" e eh o destino final da mensagem"<<std::endl;
+		}
+	}
+
+
+	mtx_ouvir_busy_tone.lock();
+	for(int i=0;i<me_alcancam.size();i++){
+		t[me_alcancam[i]].busy_tone=false;
+	}
+	mtx_ouvir_busy_tone.unlock();
 
 
 }
@@ -415,7 +449,7 @@ int tempo_de_registro;
 void no::print_tab_this(int Id, std::vector<tabela> tabela_p_imprimir){
 //	static std::mutex mtx_print_tabela; 
 //	mtx_print_tabela.lock();
-	std::cout << std::endl << "Tabela de roteamento do nó "<< Id << std::endl;
+	std::cout << std::endl << "*Tabela de roteamento do nó "<< Id << std::endl;
 
 
 	std::cout<<"|destino|proximo salto|metrica|numero de sequencia ( num ID )|"<<std::endl<<std::endl;
