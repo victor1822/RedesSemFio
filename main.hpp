@@ -1,38 +1,34 @@
 #ifndef MAIN_HPP_INCLUDED
 #define MAIN_HPP_INCLUDED
 
-#include <glm/glm.hpp>
+#include <glm/glm.hpp> // coordenadas geométricas
 #include <stdlib.h>
 #include <iostream>
-#include <vector>
-#include <stack>
+#include <vector> 
+#include <stack> // pilha
 #include <thread>
 #include <string>
 #include <climits>
 #include <time.h>
 #include "mob_programada.hpp"
 #include <unistd.h> //int usleep(useconds_t useconds);
-#include <mutex>
+#include <mutex> // semáforo
 
 
 
 #include "no.hpp"
 
 
-std::stack<mobilidade_programada> mob_programada;
-//void exitfunc(){
-//std::clog<<"Exiting..."<<std::endl;
-//}
+std::stack<mobilidade_programada> mob_programada; // pilha usada para armazenar a mobilidade programada
 
-void inicializa_tabelas(std::vector<no> &t);
+
+void inicializa_tabelas(std::vector<no> &t); // inicia as tabelas de roteamento com métrica 0 para o proprio nó e infinito para os demais
 std::mutex mtx_print_tabela; 
-//void reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id, std::vector<no> &t);
 
-//std::mutex mtx_ouvir_busy_tone; 
 
-void print_tab(int Id, std::vector<tabela> tabela_p_imprimir);
+void print_tab(int Id, std::vector<tabela> tabela_p_imprimir); // imprime uma tabela de roteamento
 
-void print_vet(std::vector<no> &v){
+void print_vet(std::vector<no> &v){ // imprime a topologia da rede
 	std::cout<< "Minha topologia tem " << v.size() << " nós, que estão distribuídos da seguinte forma:"<<std::endl;
 	for(int i = 0; i < v.size(); i++){
 		no temp;
@@ -43,7 +39,7 @@ void print_vet(std::vector<no> &v){
 }
 }
 
-std::vector<no> LoadFile(char **argv){
+std::vector<no> LoadFile(char **argv){ // lê o arquivo de entrada que contem a disposição dos nós e as futuras mudanças 
 
 unsigned int tam;
 
@@ -51,25 +47,21 @@ std::cin >> tam;
 
 const std::size_t sz = tam;
 
-//int *m = new int[sz*sz];
-std::vector<no> topol;
+
+std::vector<no> topol; // vetor de nós. Chamamos este de topologia da rede.
 
 for(int i=0; i<sz; i++){
 
 float v1=0,v2=0,v3=0;
 
-std::cin>>v1,std::cin>>v2,std::cin>>v3;
+std::cin>>v1,std::cin>>v2,std::cin>>v3;	// lendo Id e posições
 
-bool busy_tone = false;
+bool busy_tone = false; // faz parte do nosso protocolo busy_tone 
 
-std::vector<tabela> tab;
-std::stack<Mensagem> mens;
-//tabela tt;
-//num_seq nst;
-//nst.value = 0;
-//nsr.id = -1; 
+std::vector<tabela> tab;	// vector de tabelas. Na realidade, cada instancia da classe tabela é apenas um registro
+std::stack<Mensagem> mens;	// pulha de mensagens.
 
-topol.push_back(no(mens,i,glm::vec2(v1,v2),v3,busy_tone,tab,sz));
+topol.push_back(no(mens,i,glm::vec2(v1,v2),v3,busy_tone,tab,sz)); // cria nós e adiciona na topoligia da rede
 }
 
 std::cin >> tam;
@@ -81,7 +73,7 @@ float v1=0,v2=0,v3=0;
 
 std::cin>>v1,std::cin>>v2,std::cin>>v3;
 mobilidade_programada mob_temp=mobilidade_programada((int)v1,glm::vec2(v2,v3));
-mob_programada.push(mob_temp);
+mob_programada.push(mob_temp);//empilha as mobilidades programadas\\\\
 
 }
 
@@ -93,11 +85,11 @@ for(int g = 0; g < topol.size(); g++){
 	print_tab(g, topol[g].get_tabela());
 }
 
-//print_top(topologia,sz);
 return topol;
 }
 
-void atualiza_conexoes(std::vector<no> &t,bool *m){
+void atualiza_conexoes(std::vector<no> &t,bool *m){ // função utilizada para simular ambiente real de transmissão. 
+	// a matriz m nos ajuda a sabem quem pode ouvir conexões para evitar inconsistencias na simulação
 	
 //	while(true){
 
@@ -115,8 +107,8 @@ void atualiza_conexoes(std::vector<no> &t,bool *m){
 					// no seguinte trecho a gente poderia verificar se está havendo mudança na topologia pra daí 
 					// exibir no log. Quando a mudança fosse percebida pelo algorítmo de roteamento também(tabelas), 
 					// a gente exibiria também; Essas conexões vão nos servir para simular o contexto alcance de sinal
-					if(glm::distance(p1,p2)>r1) m[offset] = 0; //dentro
-					else m[offset] = 1;// fora			
+					if(glm::distance(p1,p2)>r1) m[offset] = 0; //fora
+					else m[offset] = 1;// dentro			
 				}		
 			}
 		}
@@ -141,13 +133,13 @@ void inicializa_tabelas(std::vector<no> &t){
 
 			tab_tmp.destino = j;
 			if(i==j){
-				tab_tmp.proximo_salto = i;
+				tab_tmp.proximo_salto = i; // destino é ele mesmo
 				nst.id = i; 
-				nst.value = 1; 
+				nst.value = 1; // numero de sequencia inicia em 1 ṕara o prorio nó
 			}else{
-				nst.value = 0; 
+				nst.value = 0; // não se tem um número de sequencia
 				nst.id = j; 
-				tab_tmp.proximo_salto = -1;	
+				tab_tmp.proximo_salto = -1;	// não se sabe a rota ainda, valor negativo
 			}
 			tab_tmp.numero_de_sequencia = nst;
 			if(i!=j)tab_tmp.metrica = INT_MAX;
@@ -156,13 +148,15 @@ void inicializa_tabelas(std::vector<no> &t){
 			tabela_temp.push_back(tab_tmp);
 
 		}
-			t[i].set_tabela(tabela_temp);
+			t[i].set_tabela(tabela_temp); // seta uma copia
 			tabela_temp.clear();
 	}
 }
 
 
-void print_conexoes(bool *m,std::size_t size){
+void print_conexoes(bool *m,std::size_t size){ // printa quem alcança quem. 
+	// linha alcança coluna se 1
+	// se 0, não alcança
 
 	std::cout<<" |";
 	for(int k=0;k<size;k++) std::cout<<k<<"|";
@@ -180,7 +174,8 @@ void print_conexoes(bool *m,std::size_t size){
 }
 
 
-bool verifica_dump(std::vector<bool> dump){
+bool verifica_dump(std::vector<bool> dump){ // verifica se há atualizações parciais a serem enviadas 
+	// baseado na ultima transmissão de tabela de roteamento.
 	if(dump.empty())return false;
 	for(int i = 0; i < dump.size(); i++){
 		if(dump[i]==true)return true;
@@ -190,18 +185,19 @@ bool verifica_dump(std::vector<bool> dump){
 
 
 void vida_de_no(int IdNo, std::vector<no> &t, bool *m, std::vector<unsigned char> &count){
-std::cout<<"oi"<<std::endl;
+std::cout<<"processando nó "<<IdNo<<std::endl;
 	
-		//print_tab(IdNo,t[IdNo].get_tabela());
+		// função que cada nó executa a cada interação no laço da main
 	
-		if(count[IdNo]<5 ){
+		if(count[IdNo]<5 ){ // envia 5 atualizações parciais caso existam antes de enviar a tabela de atualização inteiroa.
+			//isso evita a sobrecarga de menssagens.
 			if(verifica_dump(t[IdNo].modificacoes)){
-				t[IdNo].envia_broadcast(IdNo, 1, t, m);	
+				t[IdNo].envia_broadcast(IdNo, 1, t, m);	// envia atualizações parciais
 			}		
 			count[IdNo]++;		
 		}else{
 			count[IdNo]=0;
-			t[IdNo].envia_broadcast(IdNo, 0, t, m);
+			t[IdNo].envia_broadcast(IdNo, 0, t, m);  // envia tabela de completa
 		}
 		//usleep(1000+5*IdNo);
 
@@ -211,6 +207,7 @@ std::cout<<"oi"<<std::endl;
 
 
 
+// imprime a tabela de roteamento
 void print_tab(int Id, std::vector<tabela> tabela_p_imprimir){
 	//static std::mutex mtx_print_tabela; 
 	mtx_print_tabela.lock();
