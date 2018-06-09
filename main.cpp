@@ -61,28 +61,18 @@ while(true){
 			//var++;
 		}
 
-		bool TF2 = (rand() % 100) < 10;
-		if(TF2){ 
+		bool TF2 = (rand() % 100) < 5;
+		if(TF2 && !mob_programada.empty()){ 
 			//static int var = 0;
-			int varX,varY;
-			varX = (int)rand()%3;
-			varY = (int)rand()%3;
-			int noID = rand()%topologia.size();
-			glm::vec2 aux_pos = topologia[noID].get_pos();
-			if((int)rand()%100 <= 50){
-				aux_pos.x+=varX;
-			}else{
-				aux_pos.x-=varX;
-			}
-			if((int)rand()%100 <= 50){
-				aux_pos.y+=varY;
-			}else{
-				aux_pos.y-=varY;
-			}
+			
+			mobilidade_programada mob_pro_aux= mob_programada.top();
 
-			topologia[noID].set_no(aux_pos.x, aux_pos.y);
+			glm::vec2 aux_pos = mob_pro_aux.get_pos();
+			
 
-			std::cout<<" No "<<noID<<" agora está na posição ("<< aux_pos.x << "," << aux_pos.y << "),"<<std::endl;
+			topologia[mob_pro_aux.get_Id()].set_no(aux_pos);
+			mob_programada.pop();
+			std::cout<<" No "<<mob_pro_aux.get_Id()<<" agora está na posição ("<< aux_pos.x << "," << aux_pos.y << "),"<<std::endl;
 			
 			atualiza_conexoes(topologia,m);
 			print_vet(topologia);

@@ -10,7 +10,7 @@
 #include <string>
 #include <climits>
 #include <time.h>
-
+#include "mob_programada.hpp"
 #include <unistd.h> //int usleep(useconds_t useconds);
 #include <mutex>
 
@@ -18,6 +18,8 @@
 
 #include "no.hpp"
 
+
+std::stack<mobilidade_programada> mob_programada;
 //void exitfunc(){
 //std::clog<<"Exiting..."<<std::endl;
 //}
@@ -70,6 +72,21 @@ std::stack<Mensagem> mens;
 topol.push_back(no(mens,i,glm::vec2(v1,v2),v3,busy_tone,tab,sz));
 }
 
+std::cin >> tam;
+const std::size_t sz2=tam;
+
+for(int i=0; i<sz2; i++){
+
+float v1=0,v2=0,v3=0;
+
+std::cin>>v1,std::cin>>v2,std::cin>>v3;
+mobilidade_programada mob_temp=mobilidade_programada((int)v1,glm::vec2(v2,v3));
+mob_programada.push(mob_temp);
+
+}
+
+
+
 inicializa_tabelas(topol);
 
 for(int g = 0; g < topol.size(); g++){
@@ -93,7 +110,7 @@ void atualiza_conexoes(std::vector<no> &t,bool *m){
 				else{
 					glm::vec2 p1 = t[i].get_pos();
 					float r1 = t[i].get_ratios();
-					r1 = r1*r1;
+					//r1 = r1*r1;
 					glm::vec2 p2 = t[j].get_pos();
 					// no seguinte trecho a gente poderia verificar se está havendo mudança na topologia pra daí 
 					// exibir no log. Quando a mudança fosse percebida pelo algorítmo de roteamento também(tabelas), 
@@ -176,14 +193,11 @@ void vida_de_no(int IdNo, std::vector<no> &t, bool *m, std::vector<unsigned char
 std::cout<<"oi"<<std::endl;
 	
 		//print_tab(IdNo,t[IdNo].get_tabela());
-		bool TrueFalse = (rand() % 100) < 15;
-		if(TrueFalse){
-			//implementar aqui a quebra de enlace
-		}
-
-		if(count[IdNo]<5 && verifica_dump(t[IdNo].modificacoes)){
-
-			t[IdNo].envia_broadcast(IdNo, 1, t, m);			
+	
+		if(count[IdNo]<5 ){
+			if(verifica_dump(t[IdNo].modificacoes)){
+				t[IdNo].envia_broadcast(IdNo, 1, t, m);	
+			}		
 			count[IdNo]++;		
 		}else{
 			count[IdNo]=0;

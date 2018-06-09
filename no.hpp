@@ -36,9 +36,9 @@ public:
 
 	no(std::stack<Mensagem> buffer_, int Id_, const glm::vec2 &pos_, const float &ratios_, bool& busy_tone_, std::vector<tabela> &tabela_,const std::size_t &sz); 
 
-	void set_no(float a, float b){
+	void set_no(glm::vec2 pos_){
 
-		pos = glm::vec2(a,b);
+		pos = pos_;
 	}
 	
 	glm::vec2 get_pos(){
@@ -361,7 +361,7 @@ void no::envia_broadcast(int Id, int type, std::vector<no> &t, bool *m){
 			if(dst>=0){
 	
 				//t[dst].buffer.push(mm);
-				std::cout<<"O no "<<Id<<" esta repassando a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" destinada para o no "<<mm.IdDest<<" para o no "<<dst<<std::endl;
+				std::cout<<"O no "<<Id<<" esta repassando a mensagem '"<<mm.msg<<"' enviada pelo no "<<mm.IdOrig<<" destinada para o no "<<mm.IdDest<<", mas vai passar pelo o no "<<dst<<std::endl;
 				int offset =Id*size+mm.IdDest;
 				if(offset){
 					t[dst].buffer.push(mm);
@@ -403,7 +403,7 @@ void no::reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id
 
 			if(tabUpdate[i].numero_de_sequencia.value>Tabela[j].numero_de_sequencia.value ){
 			
-				if(tabUpdate[i].metrica<Tabela[j].metrica){
+				
 					
 					mod_temp[j]=true;
 					
@@ -414,7 +414,22 @@ void no::reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id
 					//Tabela[j].tempo_de_registro=timeOS_.now();
 					Tabela[j].metrica=tabUpdate[i].metrica+1;
 					break;
-				}else if(Tabela[j].proximo_salto== from_Id){
+			}else if(tabUpdate[i].numero_de_sequencia.value==Tabela[j].numero_de_sequencia.value ){
+				if(tabUpdate[i].metrica<Tabela[j].metrica){
+					
+					mod_temp[j]=true;
+					
+					Tabela[j].proximo_salto=from_Id;
+					Tabela[j].metrica=tabUpdate[i].metrica+1;
+					break;
+					//Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
+			}
+			//Tabela[j].numero_de_sequencia.value=tabUpdate[i].numero_de_sequencia.value;
+					//Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
+					//Tabela[j].tempo_de_registro=timeOS_.now();
+					//Tabela[j].metrica=tabUpdate[i].metrica+1;
+					//break;
+				}/*else if(Tabela[j].proximo_salto== from_Id){
 					mod_temp[j]=true;
 					Tabela[j].proximo_salto=from_Id;
 					Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
@@ -425,9 +440,9 @@ void no::reciveTableUpdate(std::vector<tabela> tabUpdate, int from_Id, int to_Id
 					}else{
 						Tabela[j].metrica=tabUpdate[i].metrica+1;
 						Tabela[j].numero_de_sequencia=tabUpdate[i].numero_de_sequencia;
-					}
+					}*/
 					
-					break;
+					//break;
 				}
 			}
 		}
@@ -438,8 +453,8 @@ num_seq numero_de_sequencia;//quem atualizou a informação da tabela
 int metrica;//numero de saltos
 int tempo_de_registro;
 */
-		}
-	}
+		
+	
 	t[to_Id].set_tabela(Tabela);
 	t[to_Id].modificacoes=mod_temp;
 	no::print_tab(to_Id,from_Id, Tabela);
@@ -468,8 +483,6 @@ void no::print_tab_this(int Id, std::vector<tabela> tabela_p_imprimir){
 
 
 //}
-
-//void no::recebe_mensagem(char * mensagem,unsigned int id_origem){}
 
 
 
